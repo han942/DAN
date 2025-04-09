@@ -1,5 +1,5 @@
 # Why is Normalization Necessary for Linear Recommenders? (SIGIR'25)
-This is the official code for DAN in the paper "Why is Normalization Necessary for Linear Recommenders?", [The 48th International ACM SIGIR Conference on Research and Development in Information Retrieval](https://sigir2025.dei.unipd.it/).
+This is the official code for DAN in the paper "[Why is Normalization Necessary for Linear Recommenders?](https://arxiv.org/abs/2504.05805)", [The 48th International ACM SIGIR Conference on Research and Development in Information Retrieval](https://sigir2025.dei.unipd.it/).
 
 ## Introduction
 Despite their simplicity, linear autoencoder (LAE)-based models have shown comparable or even better performance with faster inference speed than neural recommender models. However, LAEs face two critical challenges:
