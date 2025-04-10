@@ -9,6 +9,7 @@ Despite their simplicity, linear autoencoder (LAE)-based models have shown compa
 
 To address these issues, we propose **Data-Adaptive Normalization (DAN)**, a versatile normalization solution that flexibly controls the popularity and neighborhood biases by adjusting item- and user-side normalization to align with unique dataset characteristics.
 
+Note that a summary of our paper is on [our lab blog](https://dial.skku.edu/blog/2025_dan) (in Korean).
 
 ## Requirements
 ```
