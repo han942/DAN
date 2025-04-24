@@ -1,6 +1,10 @@
 # Why is Normalization Necessary for Linear Recommenders? (SIGIR'25)
 This is the official code for DAN in the paper "[Why is Normalization Necessary for Linear Recommenders?](https://arxiv.org/abs/2504.05805)", [The 48th International ACM SIGIR Conference on Research and Development in Information Retrieval](https://sigir2025.dei.unipd.it/).
 
+[![PWC](https://img.shields.io/endpoint.svg?url=https://paperswithcode.com/badge/why-is-normalization-necessary-for-linear/collaborative-filtering-on-gowalla)](https://paperswithcode.com/sota/collaborative-filtering-on-gowalla?p=why-is-normalization-necessary-for-linear)
+[![PWC](https://img.shields.io/endpoint.svg?url=https://paperswithcode.com/badge/why-is-normalization-necessary-for-linear/collaborative-filtering-on-yelp2018)](https://paperswithcode.com/sota/collaborative-filtering-on-yelp2018?p=why-is-normalization-necessary-for-linear)
+[![PWC](https://img.shields.io/endpoint.svg?url=https://paperswithcode.com/badge/why-is-normalization-necessary-for-linear/collaborative-filtering-on-amazon-book)](https://paperswithcode.com/sota/collaborative-filtering-on-amazon-book?p=why-is-normalization-necessary-for-linear)
+
 [![PWC](https://img.shields.io/endpoint.svg?url=https://paperswithcode.com/badge/why-is-normalization-necessary-for-linear/recommendation-systems-on-gowalla)](https://paperswithcode.com/sota/recommendation-systems-on-gowalla?p=why-is-normalization-necessary-for-linear)
 [![PWC](https://img.shields.io/endpoint.svg?url=https://paperswithcode.com/badge/why-is-normalization-necessary-for-linear/recommendation-systems-on-yelp2018)](https://paperswithcode.com/sota/recommendation-systems-on-yelp2018?p=why-is-normalization-necessary-for-linear)
 [![PWC](https://img.shields.io/endpoint.svg?url=https://paperswithcode.com/badge/why-is-normalization-necessary-for-linear/recommendation-systems-on-amazon-book)](https://paperswithcode.com/sota/recommendation-systems-on-amazon-book?p=why-is-normalization-necessary-for-linear)
