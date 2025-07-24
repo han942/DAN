@@ -27,7 +27,7 @@ def get_default_config():
     """
     Jupyter Notebook을 위한 함수.
     모든 파라미터의 기본값을 딕셔너리로 반환합니다.
-    """
+    """ # YELP2018 - EASE
     con = {
         'dataset': 'yelp2018',
         'model': 'EASE',
@@ -37,13 +37,13 @@ def get_default_config():
         'topks': "[20, 100]",
         'multicore': 0,
         'parallel': False,
-        'reg_p': 100.0,
+        'reg_p': 20.0,
         'diag_const': True,
-        'drop_p': 0.0,
+        'drop_p': 0.7,
         'xi': 0.0,
         'relax_type': 'relative',
-        'alpha': 1.0,
-        'beta': 0.5,
+        'alpha': 0.2,
+        'beta': 0.3,
         'relax': True
     }
     return con
