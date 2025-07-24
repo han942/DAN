@@ -7,7 +7,7 @@ import multiprocessing
 
 os.environ['KMP_DUPLICATE_LIB_OK'] = 'True'
 args = parse_args()
-ROOT_PATH = os.path.dirname(os.path.abspath(__file__ + "/../"))
+ROOT_PATH = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 CODE_PATH = join(ROOT_PATH, 'code')
 DATA_PATH = join(ROOT_PATH, 'data')
 
@@ -51,4 +51,4 @@ def cprint(words : str):
     print(f"\033[0;30;43m{words}\033[0m")
 
 
-print ('Current cuda device ', torch.cuda.current_device()) # check
+#print ('Current cuda device ', torch.cuda.current_device()) # check

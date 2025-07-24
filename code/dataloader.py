@@ -4,6 +4,9 @@ from scipy.sparse import csr_matrix
 import world
 from world import cprint
 
+#수정사항
+import os
+
 
 class BasicDataset(Dataset):
     def __init__(self):
@@ -97,13 +100,23 @@ class Loader(BasicDataset):
     def __init__(self, path):
         # train or test
         cprint(f'loading [{path}]')
+
+        ##
+        dataset_folder = os.path.join(world.ROOT_PATH,'data',path)
+        train_file = os.path.join(dataset_folder, 'train.txt')
+        valid_in_file = os.path.join(dataset_folder, 'valid_in.txt')
+        valid_out_file = os.path.join(dataset_folder, 'valid.txt')
+        test_in_file = os.path.join(dataset_folder, 'test_in.txt')
+        test_out_file = os.path.join(dataset_folder, 'test.txt')
+
+
         self.mode_dict = {'train': 0, "test": 1}
         self.mode = self.mode_dict['train']
         self.n_user = 0
         self.m_item = 0
         train_file = path + '/train.txt'
 
-        self.path = path
+        self.path = dataset_folder
         trainUniqueUsers, trainItem, trainUser = [], [], []
 
         self.traindataSize = 0
@@ -132,10 +145,10 @@ class Loader(BasicDataset):
         self.trainItem = np.array(trainItem)
 
         self.num_valid_user, self.m_item, self.validDataSize, self.validUserItemNet, self.validUser, self.validItem = \
-            load_strong_data(path + '/valid_in.txt', path + '/valid.txt', self.m_item)
+            load_strong_data(valid_in_file, valid_out_file, self.m_item)
 
         self.num_test_user, self.m_item, self.testDataSize, self.testUserItemNet, self.testUser, self.testItem = \
-            load_strong_data(path + '/test_in.txt', path + '/test.txt', self.m_item)
+            load_strong_data(test_in_file, test_out_file, self.m_item)
             
         self.m_item += 1
         
