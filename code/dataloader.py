@@ -85,7 +85,7 @@ def load_strong_data(input_data, target_data, prev_max_item):
     inputUser = np.array(inputUser)
     inputItem = np.array(inputItem)
 
-    inputUserItemNet = csr_matrix((np.ones(len(inputUser)), (inputUser, inputItem)),
+    inputUserItemNet = csr_matrix((np.ones(len(inputUser),dtype=np.float32), (inputUser, inputItem)),
                                     shape=(num_user, m_item+1))
     
     return num_user, m_item, DataSize, inputUserItemNet, targetUser, targetItem
@@ -159,7 +159,7 @@ class Loader(BasicDataset):
         print(f"{self.testDataSize} interactions for testing")
 
         # (users,items), bipartite graph
-        self.UserItemNet = csr_matrix((np.ones(len(self.trainUser)), (self.trainUser, self.trainItem)),
+        self.UserItemNet = csr_matrix((np.ones(len(self.trainUser),dtype=np.float32), (self.trainUser, self.trainItem)),
                                       shape=(self.n_user, self.m_item))
 
         self.users_D = np.array(self.UserItemNet.sum(axis=1)).squeeze()
@@ -167,9 +167,41 @@ class Loader(BasicDataset):
         self.items_D = np.array(self.UserItemNet.sum(axis=0)).squeeze()
         self.items_D[self.items_D == 0.] = 1.
 
-        # pre-calculate
+        #사용자 활동성 기반 그룹 생성
+        active_users_activities = self.users_D[self.users_D > 0]
+        if len(active_users_activities) > 0:
+            median_activity = np.median(active_users_activities)
+        else:
+            median_activity = 1  # Default to 1 if no active users
+        print(f"Median user activity: {median_activity:.2f}")
+
+        #2. 사용자 그룹 할당
+        self.user_groups = {
+            i:0 if self.users_D[i] <= median_activity else 1
+            for i in range(self.n_user)
+        }
+
+        self.groups = [0,1]
+        print(f'Created {len(self.groups)} groups based on user activity')
+        
+        #3. pre-calculate
         self.__validDict = self.__build_valid()
         self.__testDict = self.__build_test()
+
+
+        #4. 테스트 사용자와 그룹별 인원수 계산
+        self.test_group_user_counts = {group:0 for group in self.groups}
+        test_user_activity_count = {0: 0, 1: 0}
+
+        for user in self.__testDict.keys():
+            group_id = self.user_groups[user]
+            self.test_group_user_counts[group_id] += 1
+            test_user_activity_count[group_id] += self.users_D[user]
+        
+        print(f"Test group counts per group: {self.test_group_user_counts}")
+        if self.test_group_user_counts[0] > 0:
+            print(f"Average activity for group 0: {test_user_activity_count[0] / self.test_group_user_counts[0]:.2f}")
+            print(f"Average activity for group 1: {test_user_activity_count[1] / self.test_group_user_counts[1]:.2f}")
 
         print(f"{world.dataset} is ready to go")
 

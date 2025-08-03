@@ -148,6 +148,63 @@ def NDCGatK_r(test_data,r,k):
     ndcg[np.isnan(ndcg)] = 0.
     return np.sum(ndcg)
 
+# === [추가] 사용자별 NDCG 점수 배열을 반환하는 함수 ===
+# =========================================================
+def NDCGatK_r_per_user(test_data, r, k):
+    """
+    Normalized Discounted Cumulative Gain (per user)
+    기존 함수와 동일하지만, 최종 합계를 내지 않고 사용자별 점수 배열을 반환합니다.
+    """
+    assert len(r) == len(test_data)
+    pred_data = r[:, :k]
+
+    test_matrix = np.zeros((len(pred_data), k), dtype=np.float32)
+    for i, items in enumerate(test_data):
+        length = k if k <= len(items) else len(items)
+        test_matrix[i, :length] = 1
+        
+    max_r = test_matrix
+    idcg = np.sum(max_r * 1./np.log2(np.arange(2, k + 2)), axis=1)
+    dcg = pred_data*(1./np.log2(np.arange(2, k + 2)))
+    dcg = np.sum(dcg, axis=1)
+    idcg[idcg == 0.] = 1.
+    ndcg = dcg/idcg
+    ndcg[np.isnan(ndcg)] = 0.
+    return ndcg # [수정] 합계(sum)가 아닌 개별 점수 배열을 반환
+
+
+
+# Demographic-Parity Metrics
+def calculate_demographic_parity_ratio(group_rec_counts, group_user_counts):
+    """
+    Calculates the demographic parity ratio.
+    Args:
+        group_rec_counts (dict): {group_id: total_recommendations}
+        group_user_counts (dict): {group_id: num_users}
+    Returns:
+        float: demographic parity ratio
+    """
+    if not group_user_counts or not any(group_user_counts.values()):
+        return 0.0
+
+    avg_exposures = {}
+    for group_id, user_count in group_user_counts.items():
+        if user_count > 0:
+            avg_exposures[group_id] = group_rec_counts.get(group_id, 0) / user_count
+        else:
+            avg_exposures[group_id] = 0
+
+    if not avg_exposures:
+        return 0.0
+        
+    exposures = list(avg_exposures.values())
+    min_exposure = min(exposures)
+    max_exposure = max(exposures)
+
+    if max_exposure == 0:
+        return 1.0  # 모든 그룹에 추천이 없으면 완벽히 공평
+        
+    return min_exposure / max_exposure
 
 # uRec, uPrec
 def uRecPrecatK_r(sorted_items, test_data, r, k, pscore):

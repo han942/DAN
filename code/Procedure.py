@@ -158,6 +158,9 @@ def Test(dataset, Recmodel, multicore=0):
                'uprecision': np.zeros(len(world.topks)),
                'urecall': np.zeros(len(world.topks)),
                'undcg': np.zeros(len(world.topks)),
+
+               'demographic_parity_ratio': np.zeros(len(world.topks)),
+               'unfairness_gap_ndcg':np.zeros(len(world.topks)),
                }
 
     with torch.no_grad():
@@ -166,6 +169,8 @@ def Test(dataset, Recmodel, multicore=0):
         rating_list = []
         groundTrue_list = []
         t = perf_counter()
+
+        group_ndcg_sum = {group_id:np.zeros(len(world.topks)) for group_id in dataset.groups}
         
         for batch_users in utils.minibatch(users, batch_size=u_batch_size):
             allPos = dataset.getTestUserPosItems(batch_users)
@@ -183,8 +188,16 @@ def Test(dataset, Recmodel, multicore=0):
 
             rating[exclude_index, exclude_items] = -(1<<10)
             _, rating_K = torch.topk(rating, k=max_K)
-
             rating = rating.cpu().numpy()
+
+            #배치 단위로 unfairness gap 계산
+            r_batch = utils.getLabel(groundTrue, rating_K.cpu().numpy())
+            for i,k in enumerate(world.topks):
+                batch_ndcg_scores = utils.NDCGatK_r_per_user(groundTrue, r_batch, k)
+                for user_idx,user_id in enumerate(batch_users):
+                    group_id = dataset.user_groups[user_id]
+                    group_ndcg_sum[group_id][i] += batch_ndcg_scores[user_idx]
+
             del rating
             users_list.append(batch_users)
             rating_list.append(rating_K.cpu())
@@ -220,6 +233,36 @@ def Test(dataset, Recmodel, multicore=0):
             pre_results = []
             for x in X:
                 pre_results.append(test_one_batch(x))
+
+        # Calculate demographic parity ratio
+        if hasattr(dataset, 'user_groups') and dataset.user_groups:
+            user_groups = dataset.user_groups
+            test_group_user_counts = dataset.test_group_user_counts
+            all_test_users = [user for batch in users_list for user in batch]
+
+            #DP per K
+            for i,k in enumerate(world.topks):
+                avg_ndcg_per_group = []
+                for group_id in dataset.groups:
+                    user_count = test_group_user_counts.get(group_id,0)
+                    avg_ndcg = (group_ndcg_sum[group_id][i] / user_count) if user_count > 0 else 0
+                    avg_ndcg_per_group.append(avg_ndcg)
+
+                group_rec_counts = {group: 0 for group in dataset.groups}
+                
+                if len(avg_ndcg_per_group) > 0:
+                    gap = abs(avg_ndcg_per_group[0] - avg_ndcg_per_group[1])
+                    results['unfairness_gap_ndcg'][i] = gap
+                else:
+                    results['unfairness_gap_ndcg'][i] = 0
+
+                for user in all_test_users:
+                    if user in user_groups:
+                        group_id = user_groups[user]
+                        group_rec_counts[group_id] += k
+
+                dp_ratio = utils.calculate_demographic_parity_ratio(group_rec_counts, test_group_user_counts)
+                results['demographic_parity_ratio'][i] = dp_ratio
 
         for result in pre_results:
             results['precision'] += result['precision']

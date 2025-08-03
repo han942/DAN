@@ -99,17 +99,17 @@ class LAE_DAN(BasicModel):
         self.best_epoch = 0        
         train_start = time()
 
-        item_counts = np.array(self.train_matrix.sum(axis=0))
-        user_counts = np.array(self.train_matrix.sum(axis=1))
+        item_counts = np.array(self.train_matrix.sum(axis=0), dtype=np.float32)
+        user_counts = np.array(self.train_matrix.sum(axis=1), dtype=np.float32)
 
         X_T = X.multiply(np.power(user_counts, -self.beta)).T
-        G = X_T.dot(X).toarray()
+        G = X_T.dot(X).toarray().astype(np.float32)
         lmbda = self.reg_p + self.drop_p / (1 - self.drop_p) * np.power(item_counts, 1)
         G[np.diag_indices(self.num_items)] += lmbda.reshape(-1)
         
         P = np.linalg.inv(G)
-        B_DLAE = np.eye(self.num_items) - P * lmbda
-        item_power_term = np.power(item_counts, -(1 - self.alpha))
+        B_DLAE = np.eye(self.num_items,dtype=np.float32) - P * lmbda
+        item_power_term = np.power(item_counts, -(1 - self.alpha)).astype(np.float32)
     
         self.W = B_DLAE * (1/item_power_term).reshape(-1, 1) * item_power_term
         self.W[np.diag_indices(self.num_items)] = 0
