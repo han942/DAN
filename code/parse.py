@@ -21,4 +21,33 @@ def parse_args():
     parser.add_argument('--alpha', type=float, default=0.0)
     parser.add_argument('--beta', type=float, default=0.0)
     parser.add_argument('--relax', type=eval, default=True, choices=[True, False])
+<<<<<<< HEAD
     return parser.parse_args()  #args=[]
+=======
+    return parser.parse_args(args=[])
+
+def get_default_config():
+    """
+    Jupyter Notebook을 위한 함수.
+    모든 파라미터의 기본값을 딕셔너리로 반환합니다.
+    """ # YELP2018 - EASE
+    con = {
+        'dataset': 'yelp2018',
+        'model': 'EASE',
+        'seed': 2020,
+        'gpu': -1,
+        'testbatch': 4096,
+        'topks': "[20, 100]",
+        'multicore': 0,
+        'parallel': False,
+        'reg_p': 20.0,
+        'diag_const': True,
+        'drop_p': 0.7,
+        'xi': 0.0,
+        'relax_type': 'relative',
+        'alpha': 0.2,
+        'beta': 0.3,
+        'relax': True
+    }
+    return con
+>>>>>>> 7603c228259855c2027f16f1a61fca74be2e7655
