@@ -1,7 +1,7 @@
 import os
 from os.path import join
 import torch
-from parse import parse_args,get_default_config
+from parse import parse_args
 import multiprocessing
 
 
@@ -33,8 +33,6 @@ config['xi'] = args.xi
 config['alpha'] = args.alpha
 config['beta'] = args.beta
 config['relax'] = args.relax
-
-config = get_default_config()
 
 
 CORES = multiprocessing.cpu_count() // 2
